@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Správne právo procesné – Druhá časť – Kvíz</title>
+<style>
+  :root {
+    --primary: #818cf8;
+    --primary-dark: #6366f1;
+    --primary-light: #1e1b4b;
+    --success: #4ade80;
+    --success-light: #052e16;
+    --danger: #f87171;
+    --danger-light: #2d0a0a;
+    --warning: #fbbf24;
+    --warning-light: #2d1f00;
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --card: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px 60px;
+  }
+
+  .container { width: 100%; max-width: 780px; }
+
+  .quiz-header {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 22px 28px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.4);
+    border: 1px solid var(--border);
+  }
+  .quiz-header h1 { font-size: 1.25rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+  .quiz-header .sub2 { font-size: .82rem; color: var(--primary); opacity: .7; margin-bottom: 4px; font-weight: 600; }
+  .quiz-header .sub { font-size: .85rem; color: var(--muted); margin-bottom: 14px; }
+
+  .progress-wrap { display: flex; align-items: center; gap: 12px; }
+  .progress-track { flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); border-radius: 99px; transition: width .4s ease; }
+  .progress-label { font-size: .82rem; color: var(--muted); white-space: nowrap; min-width: 60px; text-align: right; }
+
+  .score-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--primary-light); color: var(--primary);
+    border-radius: 99px; padding: 4px 12px; font-size: .82rem; font-weight: 600;
+    margin-top: 10px; border: 1px solid var(--primary-dark);
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* START */
+  .start-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.4);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .start-card h2 { font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); }
+  .start-card p { color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+  .section-label { margin-bottom: 10px; font-weight: 600; font-size: .88rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+  .count-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+  .count-btn {
+    padding: 9px 22px; border-radius: 99px; border: 2px solid var(--border);
+    background: var(--bg2); cursor: pointer; font-weight: 600; font-size: .9rem;
+    color: var(--muted); transition: all .2s;
+  }
+  .count-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .count-btn.selected { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  /* QUESTION */
+  .question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 30px 28px 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.4);
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+  }
+  .q-number { font-size: .8rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  .q-text { font-size: 1.08rem; font-weight: 600; line-height: 1.55; margin-bottom: 24px; color: var(--text); }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: all .2s; user-select: none; background: var(--bg2);
+  }
+  .option-item:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-item.checked { border-color: var(--primary); background: var(--primary-light); }
+  .option-item input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .option-text { font-size: .95rem; line-height: 1.5; color: var(--text); }
+
+  .option-item.correct-ans { border-color: var(--success) !important; background: var(--success-light) !important; }
+  .option-item.wrong-ans   { border-color: var(--danger)  !important; background: var(--danger-light)  !important; }
+  .option-item.missed-ans  { border-color: var(--warning) !important; background: var(--warning-light) !important; }
+  .option-item.disabled    { cursor: default; pointer-events: none; }
+
+  .feedback-row {
+    display: none; align-items: center; gap: 10px; margin-top: 18px;
+    padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: .92rem;
+  }
+  .feedback-row.correct { background: var(--success-light); color: var(--success); border: 1px solid var(--success); }
+  .feedback-row.wrong   { background: var(--danger-light);  color: var(--danger);  border: 1px solid var(--danger);  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 26px; border-radius: 99px; border: none;
+    font-weight: 700; font-size: .95rem; cursor: pointer; transition: all .2s;
+  }
+  .btn-primary { background: var(--primary-dark); color: #fff; }
+  .btn-primary:hover { background: var(--primary); }
+  .btn-primary:disabled { opacity: .3; cursor: default; }
+  .btn-outline { background: transparent; border: 2px solid var(--primary-dark); color: var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-outline:disabled { opacity: .3; cursor: default; }
+  .btn-ghost { background: transparent; border: 2px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* RESULT */
+  .result-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.4);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .result-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+  .result-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; color: var(--text); }
+  .result-sub { color: var(--muted); margin-bottom: 28px; font-size: .95rem; }
+
+  .stats-row { display: flex; justify-content: center; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+  .stat-box { background: var(--bg2); border-radius: 12px; padding: 16px 24px; min-width: 110px; border: 1px solid var(--border); }
+  .stat-num { font-size: 2rem; font-weight: 800; }
+  .stat-lbl { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .stat-box.s-correct .stat-num { color: var(--success); }
+  .stat-box.s-wrong   .stat-num { color: var(--danger); }
+  .stat-box.s-total   .stat-num { color: var(--primary); }
+
+  .percent-ring { width: 130px; height: 130px; margin: 0 auto 24px; position: relative; }
+  .percent-ring svg { transform: rotate(-90deg); }
+  .percent-ring .ring-bg   { fill: none; stroke: var(--border); stroke-width: 10; }
+  .percent-ring .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+  .percent-ring .ring-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 1.6rem; font-weight: 800; color: var(--text);
+  }
+
+  .result-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  .result-actions .btn { min-width: 260px; justify-content: center; }
+
+  @media(max-width:500px){
+    .question-card { padding: 22px 16px 18px; }
+    .start-card, .result-card { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="quiz-header">
+    <h1>⚖️ Správne právo procesné – Druhá časť</h1>
+    <div class="sub2">Kolaudačné konanie · Správne procesy · Územné plánovanie · Stavebný poriadok</div>
+    <div class="sub">Zaškrtni pravdivé tvrdenia – môže byť jedno, oboje alebo žiadne</div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-label" id="progressLabel">0 / 0</div>
+    </div>
+    <div class="score-badge" id="scoreBadge">⭐ Skóre: 0</div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="screenStart">
+    <div class="start-card">
+      <h2>Vyber počet otázok</h2>
+      <p>Každá otázka má dve tvrdenia. Body získaš iba vtedy, ak správne zaškrtneš <em>aj</em> nepravdivé <em>aj</em> pravdivé tvrdenia – všetko alebo nič.</p>
+      <div class="section-label">Počet otázok</div>
+      <div class="count-row">
+        <button class="count-btn" data-count="15" onclick="selectCount(this)">15</button>
+        <button class="count-btn" data-count="30" onclick="selectCount(this)">30</button>
+        <button class="count-btn selected" data-count="40" onclick="selectCount(this)">40</button>
+        <button class="count-btn" data-count="60" onclick="selectCount(this)">60</button>
+        <button class="count-btn" data-count="all" onclick="selectCount(this)">Všetky</button>
+      </div>
+      <button class="btn btn-primary" onclick="startQuiz()" style="font-size:1rem;padding:13px 40px">
+        🚀 Spustiť kvíz
+      </button>
+    </div>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div class="screen" id="screenQuestion">
+    <div class="question-card">
+      <div class="q-number" id="qNumber">Otázka 1 z 40</div>
+      <div class="q-text" id="qText"></div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="feedback-row" id="feedbackRow"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="skipQuestion()">⏭ Preskočiť</button>
+      <button class="btn btn-primary" id="btnConfirm" onclick="confirmAnswer()">✔ Potvrdiť</button>
+      <button class="btn btn-primary" id="btnNext" onclick="nextQuestion()" style="display:none">Ďalej →</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screenResult">
+    <div class="result-card">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <div class="result-title" id="resultTitle">Výsledok</div>
+      <div class="result-sub" id="resultSub"></div>
+
+      <div class="percent-ring">
+        <svg viewBox="0 0 100 100" width="130" height="130">
+          <circle class="ring-bg" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringFill" cx="50" cy="50" r="45"
+            stroke-dasharray="282.7" stroke-dashoffset="282.7"/>
+        </svg>
+        <div class="ring-text" id="ringText">0%</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box s-total"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Celkom otázok</div></div>
+        <div class="stat-box s-correct"><div class="stat-num" id="statCorrect">0</div><div class="stat-lbl">Správne</div></div>
+        <div class="stat-box s-wrong"><div class="stat-num" id="statWrong">0</div><div class="stat-lbl">Chybné</div></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="restartAll()">🔄 Zopakovať celý test</button>
+        <button class="btn btn-outline" onclick="restartWrong()" id="btnWrongOnly">🔁 Zopakovať len chybné</button>
+        <button class="btn btn-ghost" onclick="goToStart()">⚙️ Zmeniť nastavenia</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  // ── KOLAUDAČNÉ KONANIE ──
+  ["Kolaudačné konanie",
+    ["je upravené v zákone o kolaudácii stavieb", false],
+    ["je osobitným typom správneho konania", true]],
+
+  ["Kolaudačné rozhodnutie sa vyžaduje",
+    ["zásadne pre každú dokončenú stavbu, na ktorú sa vyžadovalo stavebné povolenie", true],
+    ["aj pre jednoduché stavby, na ktoré postačilo ohlásenie", true]],
+
+  ["Stavebný úrad od kolaudácie",
+    ["musí upustiť v taxatívne vymedzených prípadoch", false],
+    ["môže upustiť v taxatívne vymedzených prípadoch", true]],
+
+  ["Pre kolaudačné konanie platí, že",
+    ["jeho účastníkom nemôže byť stavebník", false],
+    ["jeho účastníkom môže byť aj dotknutý orgán a projektant", false]],
+
+  ["Príslušným správnym orgánom na kolaudačné konanie je",
+    ["vždy obec ako všeobecný stavebný úrad", false],
+    ["stavebný úrad, ktorý vydal stavebné povolenie", true]],
+
+  ["Vo vzťahu ku začiatku kolaudačného konania sa uplatňuje",
+    ["dispozičná zásada", true],
+    ["zásada oficiality", false]],
+
+  ["V priebehu kolaudačného konania sa uplatňuje",
+    ["zásada koncentrácie konania", true],
+    ["zásada ústnosti konania", true]],
+
+  ["Stavebný úrad je rozhodnutie v kolaudačnom konaní povinný vydať v lehote",
+    ["špeciálnej lehote 60 dní od doručenia návrhu", false],
+    ["stanovenej správnym poriadkom", true]],
+
+  ["V kolaudačnom konaní spíše o ústnom pojednávaní stavebný úrad",
+    ["záznam, ak boli zistené odchýlky od skutočného realizovania stavby", false],
+    ["protokol, ak nebudú zistené odchýlky od skutočného realizovania stavby", false]],
+
+  ["V kolaudačnom konaní stavebný úrad skúma najmä (územné podmienky)",
+    ["či dokumentácia spĺňa zastavovacie podmienky určené v územnom rozhodnutí", true],
+    ["či je zabezpečená komplexnosť a plynulosť výstavby", false]],
+
+  ["V kolaudačnom konaní stavebný úrad skúma najmä (realizácia a záujem)",
+    ["či sa dodržali zastavovacie podmienky určené v stavebnom povolení", true],
+    ["či užívanie stavby nebude ohrozovať verejný záujem", true]],
+
+  ["Kolaudačným rozhodnutím",
+    ["sa primárne povoľuje užívanie stavby na určený účel", true],
+    ["sa primárne určia záväzné podmienky uskutočnenia stavby", false]],
+
+  ["Ak sa v kolaudačnom konaní zistia závady, ktoré bránia jej užívaniu, stavebný úrad",
+    ["preruší konanie a vyzve stavebníka na ich odstránenie v určenej lehote", true],
+    ["vydá kolaudačné rozhodnutie s výhradou", false]],
+
+  ["Ak sa v kolaudačnom konaní zistia drobné nedostatky, ktoré neohrozujú bezpečnosť a nebránia užívaniu stavby",
+    ["je správny orgán oprávnený vydať kolaudačné rozhodnutie", true],
+    ["je správny orgán povinný konanie prerušiť", false]],
+
+  ["Stavebný úrad je oprávnený zlúčiť s kolaudačným konaním konanie o zmene stavby v prípade, ak",
+    ["sa zrealizovanie stavby podstatne neodchyľuje od schválenej dokumentácie", true],
+    ["nie je zaistený bezpečný prístup a príchod k stavbám", false]],
+
+  ["Ak sa v kolaudačnom konaní zistí, že stavba ohrozuje bezpečnosť a zdravie ľudí, stavebný úrad",
+    ["kolaudačné rozhodnutie nevydá a návrh zamietne", true],
+    ["kolaudačné rozhodnutie nevydá a konanie zastaví", false]],
+
+  ["Hlavným motívom rozhodnutia o dočasnom užívaní stavby na skúšobnú prevádzku je potreba",
+    ["stavebníka predčasne užívať stavbu pred vydaním kolaudačného rozhodnutia", false],
+    ["posúdenia spôsobilosti stavby na užívanie pred vydaním kolaudačného rozhodnutia", true]],
+
+  ["Zmenu účelu užívania stavby uvedenú v kolaudačnom rozhodnutí je možné dosiahnuť",
+    ["v konaní o zmene užívania stavby", true],
+    ["v spojenom konaní o zmene užívania stavby a zmene stavby", true]],
+
+  ["Proti kolaudačnému rozhodnutiu",
+    ["sú prípustné výlučne mimoriadne opravné prostriedky", false],
+    ["nie je prípustný riadny opravný prostriedok", false]],
+
+  // ── SPRÁVNE PRÁVO PROCESNÉ A SPRÁVNE PROCESY ──
+  ["Správne právo procesné upravuje",
+    ["úlohy a ciele verejnej správy a hmotné práva FO/PO", false],
+    ["postup správnych orgánov pri príprave, vydávaní a uskutočňovaní aktov verejnej správy", true]],
+
+  ["Správne právo organizačné",
+    ["dáva odpoveď na otázku „ako" procesne uplatniť hmotné práva FO/PO", false],
+    ["dáva odpoveď na otázku „kto" je kompetentný vykonávať verejnú správu", true]],
+
+  ["Prepojenosť správneho práva procesného a občianskeho práva hmotného sa spája napr.",
+    ["s vecno-právnym účinkom prevodu vlastníckeho práva k nehnuteľnostiam", true],
+    ["so zánikom vlastníckeho práva v dôsledku vyvlastnenia", true]],
+
+  ["Vzťah ústavného práva k správnemu právu procesnému je daný",
+    ["ústavným oprávnením ministerstiev vydávať normatívne správne akty", false],
+    ["vymedzením podstaty zásady legality v čl. 2 ods. 2 Ústavy SR", true]],
+
+  ["Správny proces tvorí",
+    ["v širšom slova zmysle aj riadiaci správny proces a normatívny správny proces", true],
+    ["v užšom slova zmysle iba normatívny správny proces", false]],
+
+  ["Aplikačný správny proces",
+    ["má interné účinky", false],
+    ["možno synonymicky označiť ako správne konanie", false]],
+
+  ["Finálnymi formami činnosti normatívneho správneho procesu sú aj",
+    ["nariadenia vlády, vyhlášky a opatrenia ministerstiev, VZN obcí", true],
+    ["zákony, nariadenia vlády a výnosy ministerstiev", false]],
+
+  ["Pre riadiaci správny proces platí, že",
+    ["má externé účinky", false],
+    ["jeho finálnou formou činnosti sú normatívne správne akty", false]],
+
+  ["Individuálny správny akt",
+    ["je finálnou formou činnosti aplikačného správneho procesu", true],
+    ["zakladá, mení, ruší alebo deklaruje práva a povinnosti konkrétnych subjektov", true]],
+
+  ["Správne právo procesné upravuje pravidlá postupu",
+    ["súdu, strán sporu a osôb zúčastnených na konaní pri prejednávaní a rozhodovaní sporov", false],
+    ["správneho súdu, účastníkov konania a ďalších osôb v správnom súdnictve", false]],
+
+  ["Ak sa v konaní vyskytne trvalo neodstrániteľná prekážka, konanie musí byť",
+    ["zastavené", true],
+    ["prerušené", false]],
+
+  ["Lehoty na rozhodnutie",
+    ["v jednoduchých veciach správny orgán rozhodne bezodkladne", true],
+    ["štandardná lehota je 45 dní", false]],
+
+  ["Medzi riadiace procesy radíme procesy (externé)",
+    ["aplikačné externé", false],
+    ["normotvorné externé", false]],
+
+  ["Medzi riadiace procesy radíme procesy (interné)",
+    ["aplikačné interné", true],
+    ["normotvorné interné", true]],
+
+  ["Výsledkom aplikačného procesu môže byť",
+    ["predvolanie", false],
+    ["individuálny správny akt", true]],
+
+  ["Výsledkom aplikačného procesu môže byť",
+    ["administratívnoprávna zmluva", true],
+    ["interná normatívna inštrukcia", false]],
+
+  ["Výsledkom aplikačného procesu môže byť",
+    ["individuálny služobný pokyn", false],
+    ["normatívny správny akt", false]],
+
+  ["Aplikácia správneho poriadku bude v konaní o priestupkoch",
+    ["vylúčená", false],
+    ["subsidiárna", true]],
+
+  ["Ústne pojednávanie je neverejné, pokiaľ osobitný zákon alebo správny orgán neustanovia inak",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["V územnom konaní sa uplatní koncentračná zásada",
+    ["pravda", true],
+    ["nepravda", false]],
+
+  ["Predpokladom účastníctva je",
+    ["procesná spôsobilosť", false],
+    ["spôsobilosť byť účastníkom konania", true]],
+
+  ["Právo nazerať do spisov zahŕňa právo",
+    ["nafotiť si spis do mobilu", true],
+    ["robiť si z neho odpisy", true]],
+
+  ["Právo nazerať do spisov zahŕňa právo",
+    ["robiť si z neho výpisy", true],
+    ["vziať si spis so sebou", false]],
+
+  ["Právo nazerať do spisov zahŕňa právo",
+    ["dostať kópie", true],
+    ["dostať informácie zo spisov iným spôsobom", true]],
+
+  ["Svedok musí byť",
+    ["plne spôsobilý na právne úkony", false],
+    ["schopný vnímať určité javy/predmety a reprodukovať ich", true]],
+
+  ["Znalcom v konkrétnom konaní môže byť",
+    ["aj nezapísaný odborník", true],
+    ["zapísaná fyzická osoba", true]],
+
+  ["Znalcom v konkrétnom konaní môže byť",
+    ["zapísaná znalecká organizácia", true],
+    ["zapísaný znalecký ústav", true]],
+
+  ["Medzi dôkazné prostriedky radíme",
+    ["výsluchy", true],
+    ["znalecké posudky", true]],
+
+  ["Medzi dôkazné prostriedky radíme",
+    ["obhliadku", true],
+    ["listiny", true]],
+
+  // ── ÚZEMNÉ PLÁNOVANIE ──
+  ["Správa územného plánovania je zameraná na",
+    ["koordinovanie procesov povoľovania, užívania a odstraňovania stavieb", false],
+    ["zabezpečenie ochrany verejného poriadku", false]],
+
+  ["Správa územného plánovania je zameraná na",
+    ["zabezpečenie priestorového usporiadania a funkčného využívania územia", true],
+    ["stanovenie všeobecných technických požiadaviek na výstavbu", false]],
+
+  ["Miestnu štátnu správu na úseku územného plánovania vykonáva",
+    ["Ministerstvo dopravy a výstavby SR", false],
+    ["okresný úrad v sídle kraja", true]],
+
+  ["Miestnu štátnu správu na úseku územného plánovania vykonáva",
+    ["Vláda SR", false],
+    ["Obec", false]],
+
+  ["Urbanistická štúdia",
+    ["sa spracúva výlučne pri príprave územného plánu", false],
+    ["rieši čiastkové problémy v území", true]],
+
+  ["Urbanistická štúdia",
+    ["rieši otázky územného rozvoja jednotlivých zložiek osídlenia", false],
+    ["sa spracúva pre celé územia SR", false]],
+
+  // ── STAVEBNÝ PORIADOK ──
+  ["Stavebný poriadok je predmetom úpravy samostatného zákona o stavebnom poriadku",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["Pojem stavba podľa stavebného poriadku – ktorý výrok NIE je pravdivý",
+    ["je v ňom definovaná širšie ako podľa OZ", false],
+    ["je pevne spojená so zemou a to aj upevnením strojnými súčiastkami", false]],
+
+  ["Pojem stavba podľa stavebného poriadku – ktorý výrok NIE je pravdivý",
+    ["je stavebná konštrukcia postavená stavebnými prácami zo stavebných výrobkov", false],
+    ["musí byť v každom prípade spojená so zemou", true]],
+
+  ["Stavbu a jej zmenu môže uskutočňovať ktokoľvek, ak vedenie ich uskutočňovania vykonáva stavebný dozor",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["Stavby sa podľa stavebnotechnického vyhotovenia a účelu členia na",
+    ["domy a byty", false],
+    ["pozemné a inžinierske stavby", true]],
+
+  ["Stavebným pozemkom sa podľa stavebného poriadku rozumie časť územia určená na zastavanie",
+    ["starostom obce", false],
+    ["územným plánom obce, územným plánom zóny alebo územným rozhodnutím", true]],
+
+  ["Stavebným pozemkom sa podľa stavebného poriadku rozumie časť územia určená na zastavanie",
+    ["koncepciou územného rozvoja Slovenska alebo územným plánom regiónu", false],
+    ["urbanistickou štúdiou, územným generelom alebo územnou prognózou", false]],
+
+  // ── OBNOVA KONANIA A OPRAVNÉ PROSTRIEDKY ──
+  ["Obnova konania sa môže začať iba ex offo, teda ak ju nariadi SO",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["Ak podám návrh na obnovu konania ešte pred tým, ako rozhodnutie nadobudne právoplatnosť, SO",
+    ["zamietne obnovu konania", false],
+    ["zhodnotí, či ho nemôže posúdiť ako odvolanie", true]],
+
+  ["Ak podám návrh na obnovu konania ešte pred tým, ako rozhodnutie nadobudne právoplatnosť, SO",
+    ["nariadi obnovu konania", false],
+    ["bude konanie zrušené", false]],
+
+  ["Ak podám návrh na obnovu konania proti rozhodnutiu vydanom v prvom stupni, o povolení/nepovolení obnovy rozhodne",
+    ["nadriadený správny orgán", false],
+    ["prvostupňový správny orgán", true]],
+
+  ["Ak sa dôvod obnovy konania týka iba konania pred odvolacím orgánom, spojí sa rozhodnutie o obnove s novým rozhodnutím",
+    ["pravda", true],
+    ["nepravda", false]],
+
+  ["Obnova konania pozostáva z dvoch štádií",
+    ["pravda", true],
+    ["nepravda", false]],
+
+  ["Podmienkou pre nariadenie obnovy konania je",
+    ["podnet účastníka konania", false],
+    ["podanie riadneho opravného prostriedku", false]],
+
+  ["Podmienkou pre nariadenie obnovy konania je",
+    ["podanie návrhu na obnovu konania", false],
+    ["ani jedno z uvedených", true]],
+
+  ["Preskúmať rozhodnutie mimo odvolacieho konania môže navrhnúť ÚK podaním a správny orgán má povinnosť vo veci konať",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["Riadne opravné prostriedky majú vždy devolutívny účinok",
+    ["pravda", false],
+    ["nepravda", true]],
+
+  ["Rozklad má",
+    ["devolutívny účinok", false],
+    ["suspenzívny účinok", true]],
+
+  ["Pri riadnych opravných prostriedkoch sa neuplatňuje zásada",
+    ["oficiality", true],
+    ["dispozičná", false]],
+
+  ["Pri riadnych opravných prostriedkoch sa neuplatňuje zásada",
+    ["materiálnej rovnosti", false],
+    ["materiálnej pravdy", false]],
+
+  ["Rozhodnutie o zastavení správneho konania je",
+    ["meritórne rozhodnutie", false],
+    ["procesné rozhodnutie", true]],
+
+  ["Rozhodnutie o zastavení správneho konania je",
+    ["pozitívne rozhodnutie", false],
+    ["konštitutívne rozhodnutie", false]],
+
+  ["Obligatórnymi dôvodmi na prerušenie správneho konania sú",
+    ["ÚK zomrel a konanie sa týkalo len tohto účastníka", false],
+    ["adresovanie výzvy ÚK, aby v určenej lehote odstránil nedostatky podania", true]],
+
+  ["Obligatórnymi dôvodmi na prerušenie správneho konania sú",
+    ["dôležité dôvody, ktoré zhodne navrhli ÚK", false],
+    ["začalo sa konanie o predbežnej otázke", true]],
+
+  ["Proti rozhodnutiu o zastavení konania",
+    ["sa možno odvolať v každom prípade", false],
+    ["sa nemožno odvolať v žiadnom prípade", false]],
+
+  ["Proti rozhodnutiu o zastavení konania",
+    ["sa nemožno odvolať, ak odpadol dôvod konania začatého ex offo", true],
+    ["sa nemožno odvolať v taxatívne vymedzených prípadoch", true]],
+
+  ["Rozhodnutie o zastavení správneho konania podľa Správneho poriadku",
+    ["doručuje ÚK, ktorý bol vyhlásený za mŕtveho", false],
+    ["nedoručuje, ak tak ustanoví osobitný zákon", true]],
+
+  ["Rozhodnutie o zastavení správneho konania podľa Správneho poriadku",
+    ["nedoručuje v stanovených prípadoch", true],
+    ["doručuje v každom prípade", false]],
+
+  ["Procesné rozhodnutie",
+    ["rozhoduje sa ním o zastavení správneho konania", true],
+    ["rozhoduje sa ním o potrebných parciálnych otázkach správneho konania", true]],
+
+  ["Procesné rozhodnutie",
+    ["rozhoduje sa ním o prerušení správneho konania", true],
+    ["rozhoduje sa ním vo veci samej", false]],
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let quizQuestions = [];
+let currentIndex  = 0;
+let score         = 0;
+let wrongPool     = [];
+let lastWrongPool = [];
+let selectedCount = 40;
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function selectCount(el) {
+  document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCount = el.dataset.count === 'all' ? 'all' : parseInt(el.dataset.count);
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function updateProgress() {
+  const total = quizQuestions.length;
+  const pct   = total ? Math.round((currentIndex / total) * 100) : 0;
+  document.getElementById('progressFill').style.width   = pct + '%';
+  document.getElementById('progressLabel').textContent  = currentIndex + ' / ' + total;
+  document.getElementById('scoreBadge').textContent     = '⭐ Skóre: ' + score;
+}
+
+// ═══════════════════════════════════════════════
+//  QUIZ FLOW
+// ═══════════════════════════════════════════════
+function startQuiz() {
+  let pool = shuffle(ALL_QUESTIONS);
+  if (selectedCount !== 'all') pool = pool.slice(0, Math.min(selectedCount, pool.length));
+  quizQuestions = pool;
+  currentIndex  = 0;
+  score         = 0;
+  wrongPool     = [];
+  updateProgress();
+  showScreen('screenQuestion');
+  renderQuestion();
+}
+
+function goToStart()   { showScreen('screenStart'); updateProgress(); }
+function restartAll()  { showScreen('screenStart'); updateProgress(); }
+
+function restartWrong() {
+  if (!lastWrongPool.length) return;
+  quizQuestions = shuffle(lastWrongPool);
+  currentIndex  = 0;
+  score         = 0;
+  wrongPool     = [];
+  updateProgress();
+  showScreen('screenQuestion');
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER QUESTION
+// ═══════════════════════════════════════════════
+function renderQuestion() {
+  if (currentIndex >= quizQuestions.length) { showResult(); return; }
+  const q = quizQuestions[currentIndex];
+  document.getElementById('qNumber').textContent =
+    'Otázka ' + (currentIndex + 1) + ' z ' + quizQuestions.length;
+  document.getElementById('qText').textContent = q[0];
+
+  const list = document.getElementById('optionsList');
+  list.innerHTML = '';
+  [q[1], q[2]].forEach(opt => {
+    const item = document.createElement('label');
+    item.className = 'option-item';
+    item.innerHTML = `<input type="checkbox" /><span class="option-text">${opt[0]}</span>`;
+    item.querySelector('input').addEventListener('change', () => {
+      item.classList.toggle('checked', item.querySelector('input').checked);
+    });
+    list.appendChild(item);
+  });
+
+  const fb = document.getElementById('feedbackRow');
+  fb.style.display = 'none'; fb.className = 'feedback-row';
+  document.getElementById('btnConfirm').style.display = 'inline-flex';
+  document.getElementById('btnNext').style.display    = 'none';
+}
+
+// ═══════════════════════════════════════════════
+//  CONFIRM / NEXT / SKIP
+// ═══════════════════════════════════════════════
+function confirmAnswer() {
+  const q     = quizQuestions[currentIndex];
+  const items = document.querySelectorAll('.option-item');
+  const cb0   = items[0].querySelector('input').checked;
+  const cb1   = items[1].querySelector('input').checked;
+  const c0    = q[1][1], c1 = q[2][1];
+  const isRight = (cb0 === c0) && (cb1 === c1);
+
+  items.forEach((item, idx) => {
+    item.classList.add('disabled');
+    const checked = item.querySelector('input').checked;
+    const should  = idx === 0 ? c0 : c1;
+    if      ( checked &&  should) item.classList.add('correct-ans');
+    else if ( checked && !should) item.classList.add('wrong-ans');
+    else if (!checked &&  should) item.classList.add('missed-ans');
+  });
+
+  const fb = document.getElementById('feedbackRow');
+  fb.style.display = 'flex';
+  if (isRight) {
+    score++;
+    fb.className = 'feedback-row correct';
+    fb.innerHTML = '✅ Správne! Získavaš bod.';
+  } else {
+    fb.className = 'feedback-row wrong';
+    fb.innerHTML = '❌ Nesprávne. Správne: <strong style="margin-left:6px">' +
+      q[1][0] + ': ' + (c0 ? '✔' : '✘') + ' | ' +
+      q[2][0] + ': ' + (c1 ? '✔' : '✘') + '</strong>';
+    wrongPool.push(q);
+  }
+  document.getElementById('btnConfirm').style.display = 'none';
+  document.getElementById('btnNext').style.display    = 'inline-flex';
+  updateProgress();
+}
+
+function nextQuestion() {
+  currentIndex++;
+  updateProgress();
+  if (currentIndex >= quizQuestions.length) { showResult(); return; }
+  renderQuestion();
+}
+
+function skipQuestion() {
+  wrongPool.push(quizQuestions[currentIndex]);
+  currentIndex++;
+  updateProgress();
+  if (currentIndex >= quizQuestions.length) { showResult(); return; }
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════
+//  RESULT
+// ═══════════════════════════════════════════════
+function showResult() {
+  const total = quizQuestions.length;
+  const pct   = total ? Math.round((score / total) * 100) : 0;
+  lastWrongPool = [...wrongPool];
+
+  let emoji, title;
+  if      (pct >= 90) { emoji = '🏆'; title = 'Výborne!'; }
+  else if (pct >= 75) { emoji = '🎉'; title = 'Veľmi dobre!'; }
+  else if (pct >= 60) { emoji = '👍'; title = 'Dobre!'; }
+  else if (pct >= 40) { emoji = '📖'; title = 'Treba ešte trochu cvičiť'; }
+  else                { emoji = '💪'; title = 'Nevzdávaj sa, skús znova!'; }
+
+  document.getElementById('resultEmoji').textContent   = emoji;
+  document.getElementById('resultTitle').textContent   = title;
+  document.getElementById('resultSub').textContent     =
+    'Dosiahol/a si ' + score + ' z ' + total + ' bodov (' + pct + '%)';
+  document.getElementById('statTotal').textContent     = total;
+  document.getElementById('statCorrect').textContent   = score;
+  document.getElementById('statWrong').textContent     = total - score;
+  document.getElementById('ringText').textContent      = pct + '%';
+
+  const ring = document.getElementById('ringFill');
+  ring.style.strokeDashoffset = 282.7 - (282.7 * pct / 100);
+  ring.style.stroke = pct >= 75 ? '#4ade80' : pct >= 50 ? '#fbbf24' : '#f87171';
+
+  document.getElementById('progressFill').style.width  = '100%';
+  document.getElementById('progressLabel').textContent = total + ' / ' + total;
+  document.getElementById('scoreBadge').textContent    = '⭐ Skóre: ' + score;
+
+  const btnWrong = document.getElementById('btnWrongOnly');
+  btnWrong.style.display = lastWrongPool.length > 0 ? 'inline-flex' : 'none';
+
+  showScreen('screenResult');
+}
+</script>
+</body>
+</html>
